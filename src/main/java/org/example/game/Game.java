@@ -11,6 +11,7 @@ public class Game {
     private List<Character> characters;
     private UserCharacter userCharacter;
     private Scanner scanner;
+    private boolean isBoss1Defeated = false;
 
     public Game() {
         initializeCharacters();
@@ -23,7 +24,7 @@ public class Game {
         characters.add(userCharacter);
         characters.add(new Character("Enemy 1", 100, 15,0, 50));
         characters.add(new Character("Enemy 2", 100, 15,20, 75));
-        characters.add(new Character("Enemy 3", 100, 50, 50, 1000));
+        characters.add(new Character("Boss 1", 100, 50, 50, 1000));
         // More enemies can be added here
     }
 
@@ -61,6 +62,10 @@ public class Game {
             if (!enemy.isDefeated()) {
                 enemy.attack(userCharacter);
             }
+            if (!userCharacter.isDefeated() && enemy.isDefeated() && enemy.getName().equals("Boss 1")) {
+                isBoss1Defeated = true;
+                System.out.println("Boss 1 defeated! New items unlocked in the shop.");
+            }
             printCharacterStats();
         }
 
@@ -79,7 +84,10 @@ public class Game {
             System.out.println("2. Medium Health Potion (+20 Health) - 25 coins");
             System.out.println("3. Large Health Potion (+30 Health) - 75 coins");
             System.out.println("4. Sword (+5 Attack Power) - 50 coins");
-            System.out.println("5. Exit shop");
+            if (isBoss1Defeated) {
+                System.out.println("5. Longsword (+15 Attack Power) - 400 coins");
+            }
+            System.out.println("6. Exit shop");
 
             int choice = scanner.nextInt();
 
@@ -101,6 +109,10 @@ public class Game {
                     System.out.println("You have purchased a Sword. Attack power increased!");
                     break;
                 case 5:
+                    if (userCharacter.spendCoins(400 )) userCharacter.increaseAttackPower(15);
+                    System.out.println("You have purchased a Longsword. Attack power increased!");
+                    break;
+                case 6:
                     shopping = false; // Exit the shop
                     System.out.println("Exiting shop.");
                     break;
@@ -109,7 +121,7 @@ public class Game {
                     break;
             }
 
-            if (choice != 5) {
+            if (choice != 6) {
                 System.out.println("Your remaining coins: " + userCharacter.getCoins());
                 System.out.println("Your current health: " + userCharacter.getHealth());
                 System.out.println("Your current attack power: " + userCharacter.getAttackPower());
